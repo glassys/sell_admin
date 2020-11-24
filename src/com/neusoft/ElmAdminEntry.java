@@ -5,11 +5,12 @@ import com.neusoft.dao.impl.BusinessDaoImpl;
 import com.neusoft.domain.Admin;
 import com.neusoft.domain.Business;
 import com.neusoft.view.AdminView;
+import com.neusoft.view.BusinessView;
 import com.neusoft.view.impl.AdminViewImpl;
+import com.neusoft.view.impl.BusinessViewImpl;
 
 import java.util.List;
 import java.util.Scanner;
-
 /**
  * 饿了么管理入口程序
  */
@@ -21,11 +22,11 @@ public class ElmAdminEntry {
 
         Scanner input =  new Scanner(System.in);
         System.out.println("-----------------------------------");
-        System.out.println("---------饿了么后台管理系统----------");
+        System.out.println("---------饿了么后台管理系统------------");
         System.out.println("-----------------------------------");
 
         AdminView adminView = new AdminViewImpl();
-        BusinessDao businessDao = new BusinessDaoImpl();
+        BusinessViewImpl businessView = new BusinessViewImpl();
         Admin admin = adminView.login();
         int menu = 0;
         if (admin != null){
@@ -36,13 +37,10 @@ public class ElmAdminEntry {
                 menu = input.nextInt();
                 switch (menu){
                     case 1:
-                        List<Business> businesses = businessDao.listBusiness();
-                        for (Business b : businesses){
-                            System.out.println(b);
-                        }
+                        businessView.listAllBusinesses();
                         break;
                     case 2:
-                        System.out.println("搜索商家");
+                        businessView.selectBusinesses();
                         break;
                     case 3:
                         System.out.println("搜索商家");

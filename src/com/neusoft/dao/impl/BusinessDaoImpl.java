@@ -4,6 +4,7 @@ import com.neusoft.dao.BusinessDao;
 import com.neusoft.domain.Business;
 import com.neusoft.utils.JDBCUtils;
 
+import javax.sql.rowset.JdbcRowSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,18 +16,29 @@ public class BusinessDaoImpl  implements BusinessDao {
     Connection conn = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-//    @Override
-    public List<Business> listBusiness() {
+    @Override
+    public List<Business> listBusiness(String businessName, String businessAddress) {
         ArrayList<Business> list = new ArrayList<>();
-        String sql = "select * from business";
+        StringBuffer sql = new StringBuffer("select * from business WHERE 1=1");
+        if (businessName !=null && !businessName.equals("")){
+            sql.append(" and businessName like '%"+businessName+"%'");
+        }
+        if (businessAddress !=null && !businessAddress.equals("")){
+            sql.append(" and businessAddress like '%"+businessName+"%'");
+        }
         try {
             conn = JDBCUtils.getConnection();
-            pst = conn.prepareStatement(sql);
+            pst = conn.prepareStatement(sql.toString());
             rs = pst.executeQuery();
             while (rs.next()){
                 Business business = new Business();
-                String businessName = rs.getString(3);
-                business.setBusinessName(businessName);
+                business.setBusinessId(rs.getInt("bussinessId"));
+                business.setPassword(rs.getString("password"));
+                business.setBusinessName(rs.getString("businessName"));
+                business.setBusinessAddress(rs.getString("businessAddress"));
+                business.setBusinessExplain(rs.getString("businessExplain"));
+                business.setStartPrice(rs.getDouble("starPrice"));
+                business.setDeliveryPrice(rs.getDouble("deliveryPrice"));
                 list.add(business);
             }
 
@@ -37,7 +49,7 @@ public class BusinessDaoImpl  implements BusinessDao {
         return list;
     }
 
-//    @Override
+    @Override
     public int saveBusiness(String businessName) {
         int businessId = 0;
         // 希望插入一个商家的时候自动给一个默认密码
@@ -68,7 +80,7 @@ public class BusinessDaoImpl  implements BusinessDao {
      * @param businessId 商家id
      * @return 0 代表删除失败 ； 1 删除成功
      */
-//    @Override
+    @Override
     public int removeBusiness(int businessId) {
         int result = 0;
         String sql = "delete from business where businessId = ?";
@@ -96,7 +108,7 @@ public class BusinessDaoImpl  implements BusinessDao {
         return result;
     }
 
-//    @Override
+    @Override
     public int updateBusiness(Business business) {
         int result = 0;
         String sql = "update business set businessName = ?,businessAddress=? , businessExplain =?, starPrice=?, deliveryPrice = ? where businessId = ?";
@@ -116,7 +128,7 @@ public class BusinessDaoImpl  implements BusinessDao {
         return result;
     }
 
-//    @Override
+    @Override
     public Business getBusinessById(Integer businessId) {
         Business business = null;
         String sql = "select * from business where businessId = ?";
@@ -127,8 +139,13 @@ public class BusinessDaoImpl  implements BusinessDao {
             rs = pst.executeQuery();
             while (rs.next()){
                 business = new Business();
+                business.setBusinessId(rs.getInt("businessId"));
+                business.setPassword(rs.getString("password"));
                 business.setBusinessName(rs.getString("businessName"));
-
+                business.setBusinessAddress(rs.getString("businessAddress"));
+                business.setBusinessExplain(rs.getString("businessExplain"));
+                business.setStartPrice(rs.getDouble("starPrice"));
+                business.setDeliveryPrice(rs.getDouble("deliveryPrice"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,5 +153,49 @@ public class BusinessDaoImpl  implements BusinessDao {
             JDBCUtils.close(rs, pst, conn);
         }
         return business;
+    }
+
+    @Override
+    public Business getBusinessByIdAndPassword(Integer businessId, String password) {
+        Business business = null;
+        String sql = "select * from business where businessId = ? and password = ? ";
+        try {
+            conn = JDBCUtils.getConnection();
+            pst = conn.prepareStatement(sql);
+            pst.setInt(1, businessId);
+            pst.setString(2, password);
+            rs = pst.executeQuery();
+            while (rs.next()){
+                business = new Business();
+                business.setBusinessId(rs.getInt("businessId"));
+                business.setPassword(rs.getString("password"));
+                business.setBusinessName(rs.getString("businessName"));
+                business.setBusinessAddress(rs.getString("businessAddress"));
+                business.setBusinessExplain(rs.getString("businessExplain"));
+                business.setStartPrice(rs.getDouble("starPrice"));
+                business.setDeliveryPrice(rs.getDouble("deliveryPrice"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            JDBCUtils.close(rs, pst, conn);
+        }
+
+        return business;
+    }
+
+    public int updateBusinessPassword(Integer businessId,String password){
+        int res = 0;
+        String sql = "update business set password = ？ where businessId = ?";
+        try {
+            conn =JDBCUtils.getConnection();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            JDBCUtils.close(rs, pst, conn);
+        }
+        return res;
     }
 }
