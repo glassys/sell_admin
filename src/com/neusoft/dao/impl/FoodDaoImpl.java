@@ -63,6 +63,7 @@ public class FoodDaoImpl implements FoodDao {
         }finally {
             JDBCUtils.close(rs,pst,conn);
         }
+        return foodId;
     }
 
     @Override
@@ -98,12 +99,6 @@ public class FoodDaoImpl implements FoodDao {
 
             conn.commit();
         } catch (Exception e) {
-            result = 0;
-            try {
-                conn.rollback();
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
             e.printStackTrace();
         }finally {
             JDBCUtils.close(pst, conn);

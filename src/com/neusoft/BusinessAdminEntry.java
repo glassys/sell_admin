@@ -43,7 +43,7 @@ public class BusinessAdminEntry {
                         businessView.saveBusiness();
                         break;
                     case 4:
-                        businessView.removeBusiness();
+                        foodManager(business.getBusinessId());
                         break;
                     case 5:
                         System.out.println("欢迎下次登录");

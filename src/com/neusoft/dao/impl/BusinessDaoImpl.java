@@ -16,21 +16,22 @@ public class BusinessDaoImpl  implements BusinessDao {
     Connection conn = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+
     @Override
     public List<Business> listBusiness(String businessName, String businessAddress) {
         ArrayList<Business> list = new ArrayList<>();
         StringBuffer sql = new StringBuffer("select * from business WHERE 1=1");
-        if (businessName !=null && !businessName.equals("")){
-            sql.append(" and businessName like '%"+businessName+"%'");
+        if (businessName != null && !businessName.equals("")) {
+            sql.append(" and businessName like '%" + businessName + "%'");
         }
-        if (businessAddress !=null && !businessAddress.equals("")){
-            sql.append(" and businessAddress like '%"+businessName+"%'");
+        if (businessAddress != null && !businessAddress.equals("")) {
+            sql.append(" and businessAddress like '%" + businessName + "%'");
         }
         try {
             conn = JDBCUtils.getConnection();
             pst = conn.prepareStatement(sql.toString());
             rs = pst.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 Business business = new Business();
                 business.setBusinessId(rs.getInt("bussinessId"));
                 business.setPassword(rs.getString("password"));
@@ -62,13 +63,13 @@ public class BusinessDaoImpl  implements BusinessDao {
             pst.executeUpdate();
             // 同时获取自增长的id值  一行一列
             rs = pst.getGeneratedKeys();
-            if (rs.next()){
-                businessId= rs.getInt(1);
+            if (rs.next()) {
+                businessId = rs.getInt(1);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             JDBCUtils.close(rs, pst, conn);
         }
 
@@ -77,6 +78,7 @@ public class BusinessDaoImpl  implements BusinessDao {
 
     /**
      * 删除商家
+     *
      * @param businessId 商家id
      * @return 0 代表删除失败 ； 1 删除成功
      */
@@ -101,7 +103,7 @@ public class BusinessDaoImpl  implements BusinessDao {
                 throwables.printStackTrace();
             }
             e.printStackTrace();
-        }finally {
+        } finally {
             JDBCUtils.close(pst, conn);
         }
 
@@ -113,14 +115,14 @@ public class BusinessDaoImpl  implements BusinessDao {
         int result = 0;
         String sql = "update business set businessName = ?,businessAddress=? , businessExplain =?, starPrice=?, deliveryPrice = ? where businessId = ?";
         try {
-            conn =  JDBCUtils.getConnection();
+            conn = JDBCUtils.getConnection();
             pst = conn.prepareStatement(sql);
-            pst.setString(1,business.getBusinessName());
-            pst.setString(2,business.getBusinessAddress());
-            pst.setString(3,business.getBusinessExplain());
-            pst.setDouble(4,business.getStartPrice());
-            pst.setDouble(5,business.getDeliveryPrice());
-            pst.setInt(6,business.getBusinessId());
+            pst.setString(1, business.getBusinessName());
+            pst.setString(2, business.getBusinessAddress());
+            pst.setString(3, business.getBusinessExplain());
+            pst.setDouble(4, business.getStartPrice());
+            pst.setDouble(5, business.getDeliveryPrice());
+            pst.setInt(6, business.getBusinessId());
             result = pst.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -137,7 +139,7 @@ public class BusinessDaoImpl  implements BusinessDao {
             pst = conn.prepareStatement(sql);
             pst.setInt(1, businessId);
             rs = pst.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 business = new Business();
                 business.setBusinessId(rs.getInt("businessId"));
                 business.setPassword(rs.getString("password"));
@@ -149,7 +151,7 @@ public class BusinessDaoImpl  implements BusinessDao {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             JDBCUtils.close(rs, pst, conn);
         }
         return business;
@@ -165,7 +167,7 @@ public class BusinessDaoImpl  implements BusinessDao {
             pst.setInt(1, businessId);
             pst.setString(2, password);
             rs = pst.executeQuery();
-            while (rs.next()){
+            while (rs.next()) {
                 business = new Business();
                 business.setBusinessId(rs.getInt("businessId"));
                 business.setPassword(rs.getString("password"));
@@ -178,24 +180,25 @@ public class BusinessDaoImpl  implements BusinessDao {
 
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             JDBCUtils.close(rs, pst, conn);
         }
 
         return business;
     }
 
-    public int updateBusinessPassword(Integer businessId,String password){
+    public int updateBusinessPassword(Integer businessId, String password) {
         int res = 0;
         String sql = "update business set password = ？ where businessId = ?";
         try {
-            conn =JDBCUtils.getConnection();
+            conn = JDBCUtils.getConnection();
 
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             JDBCUtils.close(rs, pst, conn);
         }
         return res;
     }
+
 }
